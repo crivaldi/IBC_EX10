@@ -39,7 +39,6 @@ def QuadraticMod(p,obs):
     nll=-1*norm(expected,sigma).logpdf(obs.y).sum()
     return nll
 
-#Ask about these !!!
 LinearGuess=numpy.array([1,1,1])
 QuadraticGuess=numpy.array([1,1,1,1])
 
