@@ -2,35 +2,33 @@
 import pandas
 import numpy
 import scipy
+from scipy import stats
 from scipy.optimize import minimize
 from scipy.stats import norm
 from plotnine import *
 df=pandas.read_csv('data.txt')
-
-## For quadratic model
-def nllike(p,obs):
-	a=p[0]
-	b=p[1]
-	c=p[2]
-	sigma=p[3]
-	expected=a+b*obs.x+c*obs.x*obs.x
-	nll=-1*norm(expected,sigma).logpdf(obs.y).sum()
-	return nll
-initialGuess=numpy.array([1,1,1,1])
-fit=minimize(nllike,initialGuess,method="Nelder-Mead",options={'disp':True},args=df)
-print(fit.x)
-
-## for linear model
-def nllike(p,obs):
-	a=p[0]
-	b=p[1]
-	sigma=p[2]
-	expected=a+b*obs.x
-	nll=-1*norm(expected,sigma).logpdf(obs.y).sum()
-	return nll
+def linearlike(p,obs):
+     B0=p[0]
+     B1=p[1]
+     sigma=p[2]
+     expected=B0+B1*obs.x
+     nll=-1*norm(expected,sigma).logpdf(obs.y).sum()
+     return nll
 initialGuess=numpy.array([1,1,1])
-fit=minimize(nllike,initialGuess,method="Nelder-Mead",options={'disp':True},args=df)
-print(fit.x)
+fit=minimize(linearlike,initialGuess,method="Nelder-Mead",options={'disp':True},args=df)
+def quadlike(p,obs):
+     B0=p[0]
+     B1=p[1]
+     B2=p[2]
+     sigma=p[3]
+     expected=B0+B1*obs.x+B2*obs.x*obs.x
+     nll=-1*norm(expected,sigma).logpdf(obs.y).sum()
+     return nll
+initialGuess=numpy.array([1,1,1,1])
+fit2=minimize(quadlike,initialGuess,method="Nelder-Mead",options={'disp':True},args=df)
+teststat=2*(fit.fun - fit2.fun)
+df=len(fit2.x) - len(fit.x)
+1 - stats.chi2.cdf(teststat,df)
 
 #2
 # Setting up the function
