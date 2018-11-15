@@ -50,11 +50,7 @@ teststat=2*(fitLinear.fun-fitQuadratic.fun)
 data=len(fitQuadratic.x)-len(fitLinear.x)
 1-chi2.cdf(teststat,data)
 
-#Question - why is it saying stats is not defined? - this should be almost complete
-
-#Question 2 - make your own cases with different params like the tumor cell example (R should be between zero and 1, not negative, K should be like 100?)
-#Note for Ex10 #2 - if r is 1 population is double
-#Start with r is less than 1 and k is 1/alpha - alpha should be less than .1 - use these for params - email TA to ask if need to
+#Question 2
 def LVSim(y,t0,RN,aNN,aNT,RT,aTT,aTN):
     N=y[0]
     T=y[1]
@@ -64,29 +60,26 @@ def LVSim(y,t0,RN,aNN,aNT,RT,aTT,aTN):
     
     return [dNdt,dTdt]
 
-params=(0.5,0.5,)
-y0=[1.0,1.0]
-times=range(0,100)
-param[3]<param[4]
-
-sim=spint.odeint(func=LVSim,y0=y0,t=times,args=params)
-simDF=pandas.DataFrame({"t":times,"species1":sim[:,0],"species2":sim[:,1]})
-ggplot(simDF,aes(x="t",y="species1"))+geom_line()+geom_line(simDF,aes(x="t",y="species2"),color='red')+theme_classic()
-
-params=(0.1,1)
+#Case 1
+params=(0.5,0.03,0.05,0.5,0.04,0.06)
 y0=[0.1,0.1]
 times=range(0,100)
 sim=spint.odeint(func=LVSim,y0=y0,t=times,args=params)
-simDF=pandas.DataFrame({"t":times,"species1":sim[:,0],"species2":sim[:,1]})
-ggplot(simDF,aes(x="t",y="species1"))+geom_line()+geom_line(simDF,aes(x="t",y="species2"),color='red')+theme_classic()
+simDF=pandas.DataFrame({"t":times,"Species 1":sim[:,0],"Species 2":sim[:,1]})
+print(ggplot(simDF,aes(x="t",y="Species 1"))+geom_line()+geom_line(simDF,aes(x="t",y="Species 2"),color='red')+theme_classic())
 
-params=(0.1,100,0.05,0.1,100,0.05)
+#Case 2
+params=(0.5,0.02,0.004,0.5,0.003,0.01)
 y0=[0.1,0.1]
 times=range(0,100)
 sim=spint.odeint(func=LVSim,y0=y0,t=times,args=params)
-simDF=pandas.DataFrame({"t":times,"species1":sim[:,0],"species2":sim[:,1]})
-ggplot(simDF,aes(x="t",y="species1"))+geom_line()+geom_line(simDF,aes(x="t",y="species2"),color='red')+theme_classic()
-#Questions
-#simDF why will it not let me define species1/species2? - need to check params for multiple (3?) cases
-#What should y0 be set at for each case?
-#Check original function def and equations - should be correct and work for all 3 cases 
+simDF=pandas.DataFrame({"t":times,"Species 1":sim[:,0],"Species 2":sim[:,1]})
+print(ggplot(simDF,aes(x="t",y="Species 1"))+geom_line()+geom_line(simDF,aes(x="t",y="Species 2"),color='red')+theme_classic())
+
+#Case 3
+params=(0.5,0.05,0.06,0.5,0.07,0.05)
+y0=[0.1,0.1]
+times=range(0,100)
+sim=spint.odeint(func=LVSim,y0=y0,t=times,args=params)
+simDF=pandas.DataFrame({"t":times,"Species 1":sim[:,0],"Species 2":sim[:,1]})
+print(ggplot(simDF,aes(x="t",y="Species 1"))+geom_line()+geom_line(simDF,aes(x="t",y="Species 2"),color='red')+theme_classic())
