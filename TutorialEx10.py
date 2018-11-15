@@ -48,18 +48,45 @@ fitQuadratic=minimize(QuadraticMod,QuadraticGuess,method="Nelder-Mead",args=df)
 
 teststat=2*(fitLinear.fun-fitQuadratic.fun)
 data=len(fitQuadratic.x)-len(fitLinear.x)
-1-stats.chi2.cdf(teststat,data)
+1-chi2.cdf(teststat,data)
 
-#Question 2
-def ddSim(y,t0,r,K):
+#Question - why is it saying stats is not defined? - this should be almost complete
+
+#Question 2 - make your own cases with different params like the tumor cell example (R should be between zero and 1, not negative, K should be like 100?)
+#Note for Ex10 #2 - if r is 1 population is double
+#Start with r is less than 1 and k is 1/alpha - alpha should be less than .1 - use these for params - email TA to ask if need to
+def LVSim(y,t0,RN,aNN,aNT,RT,aTT,aTN):
     N=y[0]
-    dNdt=r*(1-N/K)*N
-    return [dNdt]
+    T=y[1]
+    
+    dNdt=RN*(1-N*aNN-T*aNT)*N
+    dTdt=RT*(1-T*aTT-N*aTN)*T
+    
+    return [dNdt,dTdt]
 
-params=(-.1,1)
-y=[0.1]
-times=range(0,600)
+params=(0.5,0.5,)
+y0=[1.0,1.0]
+times=range(0,100)
+param[3]<param[4]
 
-modelSim=spint.odeint(func=ddSim,y0=y,t=times,args=params)
-modelOutput=pandas.DataFrame({"t":times,"N":modelSim[:,0]})
-ggplot(modelOutput,aes(x="t",y="N"))+geom_line()+theme_classic()
+sim=spint.odeint(func=LVSim,y0=y0,t=times,args=params)
+simDF=pandas.DataFrame({"t":times,"species1":sim[:,0],"species2":sim[:,1]})
+ggplot(simDF,aes(x="t",y="species1"))+geom_line()+geom_line(simDF,aes(x="t",y="species2"),color='red')+theme_classic()
+
+params=(0.1,1)
+y0=[0.1,0.1]
+times=range(0,100)
+sim=spint.odeint(func=LVSim,y0=y0,t=times,args=params)
+simDF=pandas.DataFrame({"t":times,"species1":sim[:,0],"species2":sim[:,1]})
+ggplot(simDF,aes(x="t",y="species1"))+geom_line()+geom_line(simDF,aes(x="t",y="species2"),color='red')+theme_classic()
+
+params=(0.1,100,0.05,0.1,100,0.05)
+y0=[0.1,0.1]
+times=range(0,100)
+sim=spint.odeint(func=LVSim,y0=y0,t=times,args=params)
+simDF=pandas.DataFrame({"t":times,"species1":sim[:,0],"species2":sim[:,1]})
+ggplot(simDF,aes(x="t",y="species1"))+geom_line()+geom_line(simDF,aes(x="t",y="species2"),color='red')+theme_classic()
+#Questions
+#simDF why will it not let me define species1/species2? - need to check params for multiple (3?) cases
+#What should y0 be set at for each case?
+#Check original function def and equations - should be correct and work for all 3 cases 
