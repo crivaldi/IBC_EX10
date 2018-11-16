@@ -1,0 +1,85 @@
+#1 Likelihood Ratio Test of Quadratic vs Linear
+from plotnine import *
+import pandas as pd
+import numpy as np
+from scipy.optimize import minimize
+from scipy.stats import norm
+from scipy.stats import chi2
+df=pd.read_table("data.txt",header=0,sep=",")
+print df
+b=ggplot(df,aes(x="x",y="y"))
+b+geom_point()+coord_cartesian()+xlab("x")+ylab("y")+theme_classic()+stat_smooth()
+def function(p,obs):
+    B0=p[0]
+    B1=p[1]
+    sigma=p[2]
+    expected=B0+B1*(obs.x)
+    nll=-1*norm(expected,sigma).logpdf(obs.y).sum()
+    return nll
+def quad(p,obs):
+    B0=p[0]
+    B1=p[1]
+    B2=p[2]
+    sigma=p[3]
+    expected1=B0+B1*obs.x+(B2*(obs.x)*(obs.x))
+    nll=-1*norm(expected1,sigma).logpdf(obs.y).sum()
+    return nll
+quadGuess=np.array([1,10,1,0.11])
+fitquadratic=minimize(quad,quadGuess,method="Nelder-Mead",options={'disp':True},args=df)
+print(fitquadratic.x)
+linearGuess=np.array([1,4,1])
+fitlinear=minimize(function,linearGuess,method="Nelder-Mead",options={'disp':True},args=df)
+print(fitlinear.x)
+
+from scipy import stats
+teststat=2*(fitlinear.fun-fitquadratic.fun)
+print teststat
+df=len(fitquadratic.x)-len(fitlinear.x)
+print df
+1-stats.chi2.cdf(teststat,df)
+
+
+#2 Competition model with four simulations
+import pandas
+import scipy
+import scipy.integrate as spint
+from plotnine import *
+def speciesSim(y,t0,RN,N,aOO,aOT,n,rN,aTT,aTO):
+    N=y[0]
+    T=y[1]
+    dNdt=RN*(1-N*aOO-n*aOT)*N
+    dTdt=rN*(1-n*aTT-N*aTO)*n
+    return [dNdt,dTdt]
+# Model Simulation 1 where aOO<aOT and aTT>aTO
+times=range(0,1000)
+y0=[0.01,0.01]
+params=(0.1,0.1,0.04,0.09,0.1,0.1,0.04,0.09)
+sim=spint.odeint(func=speciesSim,y0=y0,t=times,args=params)
+simDF=pandas.DataFrame({"t":times,"normal":sim[:,0],"tumor":sim[:,1]})
+ggplot(simDF,aes(x="t",y="normal"))+geom_line()+geom_line(simDF,aes(x="t",y="tumor"),color='red')+theme_classic()
+# Model Simulation 2 where aOO>aOT and aTT>aTO
+times=range(0,1000)
+y0=[0.1,0.1]
+params=(0.1,0.1,0.09,0.001,0.1,0.1,0.09,0.001)
+sim=spint.odeint(func=speciesSim,y0=y0,t=times,args=params)
+simDF=pandas.DataFrame({"t":times,"normal":sim[:,0],"tumor":sim[:,1]})
+ggplot(simDF,aes(x="t",y="normal"))+geom_line()+geom_line(simDF,aes(x="t",y="tumor"),color='red')+theme_classic()
+# Model Simulation 3 where aOO<aOT and aTT<aTO
+times=range(0,1000)
+y0=[0.1,0.1]
+params=(0.1,0.1,0.075,0.09,0.1,0.1,0.075,0.09)
+sim=spint.odeint(func=speciesSim,y0=y0,t=times,args=params)
+simDF=pandas.DataFrame({"t":times,"normal":sim[:,0],"tumor":sim[:,1]})
+ggplot(simDF,aes(x="t",y="normal"))+geom_line()+geom_line(simDF,aes(x="t",y="tumor"),color='red')+theme_classic()
+# Model Simulation 4 where aOO>aOT and aTT<aTO
+times=range(0,1000)
+y0=[0.1,0.1]
+params=(0.1,0.1,0.09,0.00001,0.05,0.05,0.00001,0.09)
+sim=spint.odeint(func=speciesSim,y0=y0,t=times,args=params)
+simDF=pandas.DataFrame({"t":times,"normal":sim[:,0],"tumor":sim[:,1]})
+ggplot(simDF,aes(x="t",y="normal"))+geom_line()+geom_line(simDF,aes(x="t",y="tumor"),color='red')+theme_classic()
+
+
+
+
+
