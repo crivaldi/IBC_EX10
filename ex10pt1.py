@@ -11,34 +11,35 @@ appropriate for the data in data.txt
 @author: Patricia
 """
 
-import numpy as np
+import numpy
 import pandas
 from scipy.optimize import minimize
 from scipy.stats import norm
 from plotnine import *
 
 def linear(p, obs):
-    B0=p[0]
-    B1=p[1]
-    sigma=p[2]
-    expected=B0+B1*obs.x
-    nll=-1*norm(expected,sigma).logpdf(obs.y).sum()
+    B0=p[0] # y-int
+    B1=p[1] # slope
+    sigma=p[2] # variance
+    expected=B0+B1*obs.x # linear equn
+    nll=-1*norm(expected,sigma).logpdf(obs.y).sum() # neg log likelihood
     return nll
 
 def quadratic(p, obs):
-    B0=p[0]
-    B1=p[1]
-    B2=p[3]
-    sigma=p[4]
-    expected=B0+B1*obs.x+B2*(np.exp(obs.x,2))
+    B0=p[0] # y-int
+    B1=p[1] # 
+    B2=p[2]
+    sigma=p[3]
+    expected=B0+B1*obs.x+B2*(obs.x ** 2)
     nll=-1*norm(expected,sigma).logpdf(obs.y).sum()
     return nll
 
 data=pandas.read_csv("data.txt", sep=",")
 
-initialGuess=numpy.array([1,1,1])
-fitlin=minimize(linear,initialGuess,method="Nelder-Mead",options={'disp': True},args=data)
-fitquad=minimize(quadratic,initialGuess,method="Nelder-Mead",options={'disp': True},args=data)
+linGuess=numpy.array([12,12,1])
+quadGuess=numpy.array([12,12,8,4])
+fitlin=minimize(linear,linGuess,method="Nelder-Mead",options={'disp': True},args=data)
+fitquad=minimize(quadratic,quadGuess,method="Nelder-Mead",options={'disp': True},args=data)
 print("negative log likelihood for linear model is: ")
 print(fitlin.x)
 print("negative log likelihood for quadratic model is: ")
