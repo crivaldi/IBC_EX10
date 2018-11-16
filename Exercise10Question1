@@ -1,0 +1,76 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Nov 15 16:00:37 2018
+
+@author: jessicahummel
+"""
+
+#maximum likelihood and likelihood ratio test
+
+# Import packages
+import numpy
+import pandas
+from plotnine import *
+from scipy.optimize import minimize
+from scipy.stats import norm
+
+data=pandas.read_csv("data.txt",sep=",",header=0)
+a=ggplot(data,aes(x="x",y="y"))
+print a+geom_point()+coord_cartesian()
+
+#Linear
+
+def nllike(p,obs):
+            B0=p[0]
+            B1=p[1]
+            sigma=p[2]
+            
+            expected=B0+B1*obs.x
+            nll=-1*norm(expected,sigma).logpdf(obs.y).sum()
+            return nll
+
+initialGuess=numpy.array([1,1,1])
+fit=minimize(nllike,initialGuess,method="Nelder-Mead",options={'disp': True},args=data)
+
+print(fit.x)
+
+#Quadratic
+
+def nllike2(p,obs):
+            B0=p[0]
+            B1=p[1]
+            B2=p[2]
+            sigma=p[3]
+            
+            expected=B0+B1*obs.x+B2*obs.x*obs.x
+            nll=-1*norm(expected,sigma).logpdf(obs.y).sum()
+            return nll
+
+initialGuess=numpy.array([1,1,1,1])
+fit2=minimize(nllike2,initialGuess,method="Nelder-Mead",options={'disp': True},args=data)
+
+print(fit2.x)
+
+#Likelihood ratio test
+
+from scipy import stats
+teststat=2*(fit.fun-fit2.fun)
+df=len(fit2.x)-len(fit.x)
+
+print 1-stats.chi2.cdf(teststat,df)
+
+#Correlation of .8992 (fairly strong)
+
+
+
+
+
+
+
+
+
+
+
+
+
