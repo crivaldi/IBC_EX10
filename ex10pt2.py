@@ -28,9 +28,41 @@ def LVSim(y,t0,R1,R2,a11,a12,a22,a21):
 
 # case 1
 # All the criteria are met
-times=range(1,100)
-y0=[0.5,0.1]
+times=range(1,400)
+y0=[0.1,0.1]
 parameters=(0.5,0.5,0.6,0.4,0.5,0.3)
 sim=spint.odeint(func=LVSim,y0=y0,t=times,args=parameters)
 simDF=pandas.DataFrame({"t":times,"prey":sim[:,0],"predator":sim[:,1]})
 print(ggplot(simDF,aes(x="t",y="prey"))+geom_line()+geom_line(simDF,aes(x="t",y="predator"),color="red")+theme_classic())
+
+
+# case 2
+# a12 > a11 -> the criteria are not met
+times=range(1,100)
+y0=[0.1,0.1]
+parameters=(0.5,0.5,0.6,0.8,0.5,0.3)
+sim=spint.odeint(func=LVSim,y0=y0,t=times,args=parameters)
+simDF=pandas.DataFrame({"t":times,"prey":sim[:,0],"predator":sim[:,1]})
+print(ggplot(simDF,aes(x="t",y="prey"))+geom_line()+geom_line(simDF,aes(x="t",y="predator"),color="red")+theme_classic())
+
+# case 3
+# a21 > a22 -> the criteria are not met
+times=range(1,100)
+y0=[0.2,0.1]
+parameters=(0.5,0.5,0.6,0.4,0.5,0.6)
+sim=spint.odeint(func=LVSim,y0=y0,t=times,args=parameters)
+simDF=pandas.DataFrame({"t":times,"prey":sim[:,0],"predator":sim[:,1]})
+print(ggplot(simDF,aes(x="t",y="prey"))+geom_line()+geom_line(simDF,aes(x="t",y="predator"),color="red")+theme_classic())
+
+# case 4
+# a21 > a22 -> the criteria are not met AND
+# a12 > a11 -> the criteria are not met
+times=range(1,100)
+y0=[0.1,0.1]
+parameters=(0.5,0.5,0.6,0.8,0.5,0.8)
+sim=spint.odeint(func=LVSim,y0=y0,t=times,args=parameters)
+simDF=pandas.DataFrame({"t":times,"prey":sim[:,0],"predator":sim[:,1]})
+print(ggplot(simDF,aes(x="t",y="prey"))+geom_line()+geom_line(simDF,aes(x="t",y="predator"),color="red")+theme_classic())
+
+
+
