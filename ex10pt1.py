@@ -45,7 +45,9 @@ print(fitlin.x)
 print("Most likely parameters for quadratic are: ")
 print(fitquad.x)
 print(ggplot(data,aes(x='x',y='y'))+geom_point()+theme_classic())
+# quadratic sigma is lower (less variance) and therefore fits the data better
 if (fitlin.x[2] > fitquad.x[3]):
     print("The quadratic model suits the data better")
+# linear sigma is lower (less variance) and therefore fits the data better
 elif (fitlin.x[2] < fitquad.x[3]):
     print("The linear model suits the data better")
