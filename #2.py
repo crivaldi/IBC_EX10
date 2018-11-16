@@ -20,25 +20,22 @@ times=range(0,100)
 N0=[0.01,0.01]
 
 # Case A a12<a11 and a21<a22
-paramsA=(.5,.5,4,2,3,6)
+paramsA=(.5,.5,.01,.005,.003,.01)
 modelSimA=spint.odeint(func=comSim,y0=N0,t=times,args=paramsA)
 modelOutputA=pd.DataFrame({"t":times,"N1":modelSimA[:,0],"N2":modelSimA[:,1]})
 ggplot(modelOutputA,aes(x="t",y="N1"))+geom_line()+geom_line(modelOutputA,aes(x="t",y="N2"),color="red")+theme_classic()
 
 #Case B a12>a11 and a21<a22
-paramsB=(.5,.5,2,4,3,6)
+paramsB=(.5,.5,.01,.015,.003,.01)
 modelSimB=spint.odeint(func=comSim,y0=N0,t=times,args=paramsB)
 modelOutputB=pd.DataFrame({"t":times,"N1":modelSimB[:,0],"N2":modelSimB[:,1]})
 ggplot(modelOutputB,aes(x="t",y="N1"))+geom_line()+geom_line(modelOutputB,aes(x="t",y="N2"),color="red")+theme_classic() 
 
-#Case C a12>a11 and a21>a22
-paramsC=(.5,.5,2,4,6,3)
+#Case C a12<a11 and a21>a22
+paramsC=(.5,.5,.01,.005,.015,.003)
 modelSimC=spint.odeint(func=comSim,y0=N0,t=times,args=paramsC)
 modelOutputC=pd.DataFrame({"t":times,"N1":modelSimC[:,0],"N2":modelSimC[:,1]})
-ggplot(modelOutput,aes(x="t",y="N1"))+geom_line()+geom_line(modelOutput,aes(x="t",y="N2"),color="red")+theme_classic() 
+ggplot(modelOutputC,aes(x="t",y="N1"))+geom_line()+geom_line(modelOutputC,aes(x="t",y="N2"),color="red")+theme_classic() 
 
-#Case D a12<a11 and a21>a22
-paramsD=(.5,.5,4,2,6,3)
-modelSimD=spint.odeint(func=comSim,y0=N0,t=times,args=paramsD)
-modelOutputD=pd.DataFrame({"t":times,"N1":modelSimD[:,0],"N2":modelSimD[:,1]})
-ggplot(modelOutputD,aes(x="t",y="N1"))+geom_line()+geom_line(modelOutputD,aes(x="t",y="N2"),color="red")+theme_classic() 
+#when a12<a11 and a21<a22 criteria is met, the plot show that there is coexistence between the two species 
+#when one portion of the criteria is not met, one of the species does not survive and dies off 
