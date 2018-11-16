@@ -27,7 +27,7 @@ def linear(p, obs):
 
 def quadratic(p, obs):
     B0=p[0] # y-int
-    B1=p[1] # 
+    B1=p[1] 
     B2=p[2]
     sigma=p[3]
     expected=B0+B1*obs.x+B2*(obs.x ** 2)
@@ -36,12 +36,16 @@ def quadratic(p, obs):
 
 data=pandas.read_csv("data.txt", sep=",")
 
-linGuess=numpy.array([12,12,1])
+linGuess=numpy.array([12,12,1]) # random parameters
 quadGuess=numpy.array([12,12,8,4])
-fitlin=minimize(linear,linGuess,method="Nelder-Mead",options={'disp': True},args=data)
+fitlin=minimize(linear,linGuess,method="Nelder-Mead",options={'disp': True},args=data) # call fxns with args
 fitquad=minimize(quadratic,quadGuess,method="Nelder-Mead",options={'disp': True},args=data)
 print("Most likely parameters for linear model are: ")
 print(fitlin.x)
 print("Most likely parameters for quadratic are: ")
 print(fitquad.x)
 print(ggplot(data,aes(x='x',y='y'))+geom_point()+theme_classic())
+if (fitlin.x[2] > fitquad.x[3]):
+    print("The quadratic model suits the data better")
+elif (fitlin.x[2] < fitquad.x[3]):
+    print("The linear model suits the data better")
