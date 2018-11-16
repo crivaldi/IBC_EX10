@@ -45,9 +45,14 @@ print(fitlin.x)
 print("Most likely parameters for quadratic are: ")
 print(fitquad.x)
 print(ggplot(data,aes(x='x',y='y'))+geom_point()+theme_classic())
-# quadratic sigma is lower (less variance) and therefore fits the data better
-if (fitlin.x[2] > fitquad.x[3]):
-    print("The quadratic model suits the data better")
-# linear sigma is lower (less variance) and therefore fits the data better
-elif (fitlin.x[2] < fitquad.x[3]):
-    print("The linear model suits the data better")
+
+# run likelihood ratio test
+teststat=2*(fitlin.fun-fitquad.fun)
+print(teststat)
+
+df=len(fitlin.x)-len(fitquad.x) # degrees of freedom
+
+print("The p-value is: ")
+p = 1-stats.chi2.cdf(teststat,df)
+print(p)
+# p-value shows an insignificant difference between two models?
