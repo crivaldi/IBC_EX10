@@ -57,4 +57,6 @@ print(quadraticfit.x)
 
 test = 2*(linearfit.fun-quadraticfit.fun)
 df = len(quadraticfit.x)-len(linearfit.x)
-chi2.cdf(teststat,df)
+1-chi2.cdf(teststat,df)
+
+#p > 0.05. Fit of models to data is not significantly different.
