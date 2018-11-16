@@ -1,0 +1,58 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Nov 13 00:07:26 2018
+
+@author: atatarian
+"""
+
+#generate a scrip that uses 3 or more model simulations to demonstrate the
+#validity of the criteria for coexistence
+# Challenge - Lotka and Volterra
+
+import pandas
+import scipy
+import scipy.integrate as spint
+from plotnine import *
+
+def speciesSim(y,t0,RN,a11,a12,RT,a22,a21):
+    N1=y[0]
+    N2=y[1]
+    
+    dN1dt=RN*(1-N1*a11-N2*a12)*N1
+    dN2dt=RT*(1-N2*a22-N1*a21)*N2
+    
+    return [dN1dt,dN2dt]
+
+#N1 = N, R1=RN
+#N2 = T, R2=TN
+#a12 < a11       #follow these rules when inputing parameters
+#a21 < a22       #Usually, r<1 and a<0.1
+
+# case 1 -coexistence
+times=range(1,100)
+N0=[1,1]
+params=(0.5,0.01,0.005,0.5,0.01,0.003)
+modelSim=spint.odeint(func=speciesSim,y0=y0,t=times,args=params)
+modelOut=pandas.DataFrame({"t":times,"N1":modelSim[:,0],"N2":modelSim[:,1]})
+
+print ggplot(modelOut,aes(x="t",y="N1"))+geom_line()+theme_classic()+geom_line(modelOut,aes(x="t",y="N2"),color='red')
+
+# case 2 - failure
+times=range(1,100)
+N0=[1,1]
+params=(0.4,0.06,0.003,0.1,0.02,0.001)
+modelSim=spint.odeint(func=speciesSim,y0=y0,t=times,args=params)
+modelOut=pandas.DataFrame({"t":times,"N1":modelSim[:,0],"N2":modelSim[:,1]})
+
+print ggplot(modelOut,aes(x="t",y="N1"))+geom_line()+theme_classic()+geom_line(modelOut,aes(x="t",y="N2"),color='blue')
+
+
+# case 3 - failure
+times=range(1,100)
+N0=[1,1]
+params=(0.4,0.05,0.009,0.7,0.07,0.007)
+modelSim=spint.odeint(func=speciesSim,y0=y0,t=times,args=params)
+modelOut=pandas.DataFrame({"t":times,"N1":modelSim[:,0],"N2":modelSim[:,1]})
+
+print ggplot(modelOut,aes(x="t",y="N1"))+geom_line()+theme_classic()+geom_line(modelOut,aes(x="t",y="N2"),color='green')
